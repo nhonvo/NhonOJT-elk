@@ -1,0 +1,41 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+  elastic:
+    driver: bridge
+
+services:
+  nhonojtelk:
+    image: nhonojtelk
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 5231:5231
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - dev
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.14.0
+    environment:
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.14.0
+    ports:
+      - 5601:5601
+    networks:
+      - elastic
+
+volumes:
+  app_data:
